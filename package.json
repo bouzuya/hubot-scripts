@@ -1,0 +1,23 @@
+{
+  "name": "hubot-scripts",
+  "version": "0.0.0",
+  "description": "hubot-scripts for FaithCreates Inc.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/faithcreates/hubot-scripts.git"
+  },
+  "keywords": [
+    "hubot",
+    "hubot-scripts"
+  ],
+  "author": "FaithCreates Inc.",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/faithcreates/hubot-scripts/issues"
+  },
+  "homepage": "https://github.com/faithcreates/hubot-scripts"
+}
