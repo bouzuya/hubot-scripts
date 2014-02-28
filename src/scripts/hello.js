@@ -17,7 +17,7 @@
 //   Ayumu Yamauchi
 //
 module.exports = function(robot) {
-  robot.respond(/hello/, function(res) {
+  robot.respond(/HELLO$/i, function(res) {
     res.send('hello!');
   });
 };
