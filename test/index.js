@@ -1,4 +1,4 @@
-var expect = require('chai').expect;
+var expect = require('chai').use(require('sinon-chai')).expect;
 var hello = require('../src/scripts/hello');
 
 describe('hello.js', function() {
