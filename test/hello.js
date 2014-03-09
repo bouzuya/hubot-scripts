@@ -16,7 +16,7 @@ describe('hello.js', function() {
           callback(res);
         }
       };
-      hello(robot)
+      hello(robot);
     });
   });
 });

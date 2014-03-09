@@ -22,6 +22,10 @@
   "homepage": "https://github.com/faithcreates/hubot-scripts",
   "devDependencies": {
     "chai": "^1.9.0",
+    "grunt": "^0.4.3",
+    "grunt-contrib-jshint": "^0.8.0",
+    "jshint-stylish": "^0.1.5",
+    "load-grunt-config": "^0.7.1",
     "mocha": "^1.17.1",
     "sinon-chai": "^2.5.0"
   }
