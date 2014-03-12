@@ -76,6 +76,6 @@ module.exports = function(robot) {
 
     });
 
-  }, 10 * 1000);
+  }, 60 * 1000);
 
 };
