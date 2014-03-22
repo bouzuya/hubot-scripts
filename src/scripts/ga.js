@@ -16,9 +16,9 @@
 //   bouzuya
 //
 module.exports = function(robot) {
+  var util = require('util');
   var q = require('q');
   var googleapis = require('googleapis');
-  var util = require('util');
   var moment = require('moment');
 
   var ANALYTICS_SCOPE = [
@@ -46,9 +46,6 @@ module.exports = function(robot) {
     return deferred.promise;
   };
 
-  var analyticsClient = function() {
-  };
-
   var request = function(auth, options) {
     var deferred = q.defer();
     googleapis
@@ -68,6 +65,17 @@ module.exports = function(robot) {
       }
     });
     return deferred.promise;
+  };
+
+  var respond = function(res, data) {
+    var r = data.totalsForAllResults;
+    var msg = util.format(
+      'PV: %s, UU: %s, Session: %s',
+      r['ga:pageviews'],
+      r['ga:visits'],
+      r['ga:visitors']
+    );
+    res.send(msg);
   };
 
   // [{ "id": "analytics profile id", "name": "account name", "email": "service account email address", key: "service account private key text" }]
@@ -92,16 +100,7 @@ module.exports = function(robot) {
 
     authorize({ email: ga.email, key: ga.key })
     .then(function(auth) { return request(auth, requestOptions); })
-    .then(function(res) {
-      var result = res.totalsForAllResults;
-      var msg = util.format(
-        'PV: %s, UU: %s, Session: %s',
-        result['ga:pageviews'],
-        result['ga:visits'],
-        result['ga:visitors']
-      );
-      res.send(msg);
-    });
+    .then(function(result) { return respond(res, result); });
   });
 };
 
