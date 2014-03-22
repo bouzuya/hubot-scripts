@@ -10,7 +10,7 @@
 //   HUBOT_GA
 //
 // Commands:
-//   hubot ga <name> - display google analytics
+//   hubot ga <name> [<start> [<end>]] - display google analytics
 //
 // Author:
 //   bouzuya
@@ -85,10 +85,11 @@ module.exports = function(robot) {
   var configs = JSON.parse(process.env.HUBOT_GA);
 
   robot.respond(/ga (\S+)(\s+(\d{4}-\d{2}-\d{2})(\s+(\d{4}-\d{2}-\d{2}))?)?$/, function(res) {
-    var today = moment().format('YYYY-MM-DD');
+    var today = moment();
+    var lastMonth = moment(today).subtract('months', 1);
     var name = res.match[1];
-    var from = res.match[3] || today;
-    var to   = res.match[5] || today;
+    var from = res.match[3] || lastMonth.format('YYYY-MM-DD');
+    var to   = res.match[5] || today.format('YYYY-MM-DD');
 
     var targets = configs.filter(function(config) {
       return config.name === name;
