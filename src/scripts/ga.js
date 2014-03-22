@@ -67,10 +67,12 @@ module.exports = function(robot) {
     return deferred.promise;
   };
 
-  var respond = function(res, data) {
+  var respond = function(res, from, to, data) {
     var r = data.totalsForAllResults;
     var msg = util.format(
-      'PV: %s, UU: %s, Session: %s',
+      '%s/%s, PV: %s, UU: %s, Session: %s',
+      from,
+      to,
       r['ga:pageviews'],
       r['ga:visits'],
       r['ga:visitors']
@@ -82,25 +84,30 @@ module.exports = function(robot) {
   // e.g. [{ "id": "ga:99999999", "name": "example.com", "email": "999999999999-abcdefghiklmnopqrstuvwxyz@developer.gserviceaccount.com", key: "-----BEGIN PRIVATE KEY-----...-----END PRIVATE KEY-----" }]
   var configs = JSON.parse(process.env.HUBOT_GA);
 
-  robot.respond(/ga (\S+)$/, function(res) {
+  robot.respond(/ga (\S+)(\s+(\d{4}-\d{2}-\d{2})(\s+(\d{4}-\d{2}-\d{2}))?)?$/, function(res) {
+    var today = moment().format('YYYY-MM-DD');
     var name = res.match[1];
-    var targets = configs.filter(function(config) { return config.name === name; });
+    var from = res.match[3] || today;
+    var to   = res.match[5] || today;
+
+    var targets = configs.filter(function(config) {
+      return config.name === name;
+    });
     var ga = (targets.length > 0 ? targets[0] : null);
     if (!ga) {
       return;
     }
 
-    var today = moment().format('YYYY-MM-DD');
     var requestOptions = {
       'ids': ga.id,
-      'start-date': today,
-      'end-date': today,
+      'start-date': from,
+      'end-date': to,
       'metrics': 'ga:pageviews,ga:visits,ga:visitors',
     };
 
     authorize({ email: ga.email, key: ga.key })
     .then(function(auth) { return request(auth, requestOptions); })
-    .then(function(result) { return respond(res, result); });
+    .then(function(result) { return respond(res, from, to, result); });
   });
 };
 
