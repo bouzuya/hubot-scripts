@@ -82,7 +82,7 @@ module.exports = function(robot) {
 
   // [{ "id": "analytics profile id", "name": "account name", "email": "service account email address", key: "service account private key text" }]
   // e.g. [{ "id": "ga:99999999", "name": "example.com", "email": "999999999999-abcdefghiklmnopqrstuvwxyz@developer.gserviceaccount.com", key: "-----BEGIN PRIVATE KEY-----...-----END PRIVATE KEY-----" }]
-  var configs = JSON.parse(process.env.HUBOT_GA);
+  var configs = JSON.parse(process.env.HUBOT_GA || '[]');
 
   robot.respond(/ga (\S+)(\s+(\d{4}-\d{2}-\d{2})(\s+(\d{4}-\d{2}-\d{2}))?)?$/, function(res) {
     var today = moment();
