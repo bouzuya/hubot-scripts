@@ -26,9 +26,11 @@
     "sinon-chai": "^2.5.0"
   },
   "dependencies": {
+    "cheerio": "^0.13.1",
     "googleapis": "^0.6.1",
     "moment": "^2.5.1",
     "q": "^1.0.1",
+    "request": "^2.34.0",
     "twitter": "^0.2.8"
   }
 }
