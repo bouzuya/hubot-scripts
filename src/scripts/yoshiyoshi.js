@@ -5,12 +5,12 @@
 //   "twitter": "^0.2.8" 
 //
 // Configuration:
-//   YOSHIYOSHI_TWITTER_CONSUMER_KEY
-//   YOSHIYOSHI_TWITTER_CONSUMER_SECRET
-//   YOSHIYOSHI_TWITTER_ACCESS_TOKEN_KEY
-//   YOSHIYOSHI_TWITTER_ACCESS_TOKEN_SECRET
-//   YOSHIYOSHI_SCREEN_NAME
-//   YOSHIYOSHI_ROOM_NAME
+//   HUBOT_YOSHIYOSHI_TWITTER_CONSUMER_KEY
+//   HUBOT_YOSHIYOSHI_TWITTER_CONSUMER_SECRET
+//   HUBOT_YOSHIYOSHI_TWITTER_ACCESS_TOKEN_KEY
+//   HUBOT_YOSHIYOSHI_TWITTER_ACCESS_TOKEN_SECRET
+//   HUBOT_YOSHIYOSHI_SCREEN_NAME
+//   HUBOT_YOSHIYOSHI_ROOM_NAME
 //
 // Commands:
 //   None
@@ -31,14 +31,14 @@ module.exports = function(robot) {
   var util = require('util');
   var Twitter = require('twitter');
 
-  var screenName = process.env.YOSHIYOSHI_SCREEN_NAME;
-  var roomName = process.env.YOSHIYOSHI_ROOM_NAME;
+  var screenName = process.env.HUBOT_YOSHIYOSHI_SCREEN_NAME;
+  var roomName = process.env.HUBOT_YOSHIYOSHI_ROOM_NAME;
 
   var twitter = new Twitter({
-    consumer_key:                 process.env.YOSHIYOSHI_TWITTER_CONSUMER_KEY,
-    consumer_secret:              process.env.YOSHIYOSHI_TWITTER_CONSUMER_SECRET,
-    consumer_access_token_key:    process.env.YOSHIYOSHI_TWITTER_ACCESS_TOKEN,
-    consumer_access_token_secret: process.env.YOSHIYOSHI_TWITTER_ACCESS_TOKEN_SECRET
+    consumer_key:                 process.env.HUBOT_YOSHIYOSHI_TWITTER_CONSUMER_KEY,
+    consumer_secret:              process.env.HUBOT_YOSHIYOSHI_TWITTER_CONSUMER_SECRET,
+    consumer_access_token_key:    process.env.HUBOT_YOSHIYOSHI_TWITTER_ACCESS_TOKEN,
+    consumer_access_token_secret: process.env.HUBOT_YOSHIYOSHI_TWITTER_ACCESS_TOKEN_SECRET
   });
   var sinceId = null;
 
