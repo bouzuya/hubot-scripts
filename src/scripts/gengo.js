@@ -8,7 +8,7 @@
 //   None
 //
 // Commands:
-//   hubot gengo <year> - display japanese era
+//   hubot gengo [<year>] - display japanese era
 //
 // Notes:
 //   - 明治以降のみに対応。
@@ -23,8 +23,8 @@ module.exports = function(robot) {
   var S_START = 1926;
   var H_START = 1989;
 
-  robot.respond(/gengo\s+(\d+)$/i, function(res) {
-    var year = parseInt(res.match[1], 10);
+  robot.respond(/gengo(\s+(\d+))?$/i, function(res) {
+    var year = parseInt(res.match[2] || (new Date().getYear() + 1900), 10);
     if (year < M_START) {
       res.send('知りません');
     } else if (year < T_START) {
