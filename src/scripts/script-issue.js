@@ -27,7 +27,7 @@ module.exports = function(robot) {
   var backlogApi = require('backlog-api');
   var q = require('q');
 
-  robot.respond(/script-issue(\s+(\S+))?/i, function(res) {
+  robot.respond(/script-issue(\s+(\S.*?))?\s*$/i, function(res) {
     var spaceId  = process.env.HUBOT_SCRIPT_ISSUE_SPACE_ID;
     var username = process.env.HUBOT_SCRIPT_ISSUE_USERNAME;
     var password = process.env.HUBOT_SCRIPT_ISSUE_PASSWORD;
