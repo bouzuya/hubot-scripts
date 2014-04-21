@@ -9,6 +9,7 @@
 //   HUBOT_BACKLOG_SUMMARY_SPACE_ID
 //   HUBOT_BACKLOG_SUMMARY_USERNAME
 //   HUBOT_BACKLOG_SUMMARY_PASSWORD
+//   HUBOT_BACKLOG_SUMMARY_USE_HIPCHAT
 //
 // Commands:
 //   hubot backlog-summary <project> - display backlog project summary
@@ -85,6 +86,8 @@ module.exports = function(robot) {
   robot.respond(/backlog-summary\s+([-a-zA-Z]+)\s*$/i, function(res) {
     var projectKey = res.match[1].toUpperCase();
 
+    res.send('OK. Now loading...');
+
     var backlog = backlogApi(
       process.env.HUBOT_BACKLOG_SUMMARY_SPACE_ID,
       process.env.HUBOT_BACKLOG_SUMMARY_USERNAME,
@@ -117,6 +120,7 @@ module.exports = function(robot) {
           res.send('error!');
         } else {
           res.send(
+            (process.env.HUBOT_BACKLOG_SUMMARY_USE_HIPCHAT ? '/quote ' : '') +
             'milestone:\n  All: closed/all (etimated_hours closed/all)\n' +
             messages.join(''));
         }
