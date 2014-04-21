@@ -23,6 +23,7 @@ module.exports = function(robot) {
   var q = require('q');
   var request = require('request');
   var xml2js = require('xml2js');
+  var parser = new xml2js.Parser({ explicitArray: false });
 
   // ex: '["8056759", "14818701" [, ...]]'
   var mylistIds = JSON.parse(process.env.HUBOT_EMAS_MYLIST_IDS || '[]');
@@ -90,22 +91,14 @@ module.exports = function(robot) {
     request(url, function (err, _, body) {
       if (err) deferred.reject(err);
 
-      xml2js.parseString(body, function (err, video) {
+      parser.parseString(body, function (err, video) {
         if (err) deferred.reject(err);
 
-        deferred.resolve(normalizeVideoDetail(video));
+        deferred.resolve(video.nicovideo_thumb_response.thumb);
       });
     });
 
     return deferred.promise;
-  };
-
-  var normalizeVideoDetail = function (video) {
-    var videoData = video.nicovideo_thumb_response.thumb[0];
-    return Object.keys(videoData).reduce(function (acc, key) {
-      acc[key] = videoData[key][0];
-      return acc;
-    }, {});
   };
 
   var randomWithRange = function (min, max) {
