@@ -30,27 +30,27 @@ module.exports = function(robot) {
     return util.format('http://nicomy.net/api/%s.json', id);
   });
 
-  var videoCache = null;
-  var getAllVideos = function () {
+  var videoIdCache = null;
+  var getAllVideoIds = function () {
     var deferred = q.defer();
 
-    if (videoCache) {
-      deferred.resolve(videoCache);
+    if (videoIdCache) {
+      deferred.resolve(videoIdCache);
       return deferred.promise
     }
 
     q.all(
       mylistUrls.map(function (url) {
-        return getVideos(url);
+        return getVideoIds(url);
       })
     )
     .spread(function () {
-      var videosOfEachMylist = [].slice.call(arguments);
-      var allVideos = videosOfEachMylist.reduce(function (acc, videos) {
-        return acc.concat(videos);
+      var videoIdsOfEachMylist = [].slice.call(arguments);
+      var allVideoIds = videoIdsOfEachMylist.reduce(function (acc, videoIds) {
+        return acc.concat(videoIds);
       }, []);
-      videoCache = allVideos;
-      deferred.resolve(allVideos);
+      videoIdCache = allVideoIds;
+      deferred.resolve(allVideoIds);
     })
     .fail(function (err) {
       deferred.reject(err);
@@ -59,7 +59,7 @@ module.exports = function(robot) {
     return deferred.promise;
   };
 
-  var getVideos = function (url) {
+  var getVideoIds = function (url) {
     var deferred = q.defer();
 
     request.post(
@@ -69,12 +69,15 @@ module.exports = function(robot) {
         if (err) deferred.reject(err);
 
         var json = JSON.parse(body);
-        var videos = json.mylist_item_data
+        var videoIds = json.mylist_item_data
         .filter(function (video) {
           return video.item_data.deleted === '0';
+        })
+        .map(function (video) {
+          return video.item_data.video_id;
         });
 
-        deferred.resolve(videos);
+        deferred.resolve(videoIds);
       });
 
     return deferred.promise;
@@ -90,17 +93,17 @@ module.exports = function(robot) {
       xml2js.parseString(body, function (err, video) {
         if (err) deferred.reject(err);
 
-        deferred.resolve(normalizeVideoDetailJson(video));
+        deferred.resolve(normalizeVideoDetail(video));
       });
     });
 
     return deferred.promise;
   };
 
-  var normalizeVideoDetailJson = function (json) {
-    var data = json.nicovideo_thumb_response.thumb[0];
-    return Object.keys(data).reduce(function (acc, key) {
-      acc[key] = data[key][0];
+  var normalizeVideoDetail = function (video) {
+    var videoData = video.nicovideo_thumb_response.thumb[0];
+    return Object.keys(videoData).reduce(function (acc, key) {
+      acc[key] = videoData[key][0];
       return acc;
     }, {});
   };
@@ -109,8 +112,8 @@ module.exports = function(robot) {
     return Math.floor( Math.random() * ( max - min + 1) + min );
   };
 
-  var choiceVideo = function (videos) {
-    return videos[randomWithRange(0, videos.length - 1)];
+  var choice = function (coll) {
+    return coll[randomWithRange(0, coll.length - 1)];
   };
 
   var createMessages = function (video) {
@@ -134,10 +137,10 @@ module.exports = function(robot) {
   };
 
   robot.respond(/emas$/i, function (res) {
-    getAllVideos()
-    .then(function (videos) {
-      var video = choiceVideo(videos);
-      return getVideoDetail(video.item_data.video_id);
+    getAllVideoIds()
+    .then(function (videoIds) {
+      var videoId = choice(videoIds);
+      return getVideoDetail(videoId);
     })
     .then(function (video) {
       res.send.apply(res, createMessages(video));
