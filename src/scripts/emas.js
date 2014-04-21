@@ -4,6 +4,7 @@
 // Dependencies:
 //   "q": "1.0.1"
 //   "request": "^2.34.0"
+//   "xml2js": "0.4.2"
 //
 // Configuration:
 //   None
@@ -21,6 +22,7 @@ module.exports = function(robot) {
   var util = require('util');
   var q = require('q');
   var request = require('request');
+  var xml2js = require('xml2js');
 
   // ex: '["8056759", "14818701" [, ...]]'
   var mylistIds = JSON.parse(process.env.HUBOT_EMAS_MYLIST_IDS || '[]');
@@ -78,6 +80,31 @@ module.exports = function(robot) {
     return deferred.promise;
   };
 
+  var getVideoDetail = function (id) {
+    var deferred = q.defer();
+
+    var url = util.format('http://ext.nicovideo.jp/api/getthumbinfo/%s', id);
+    request(url, function (err, _, body) {
+      if (err) deferred.reject(err);
+
+      xml2js.parseString(body, function (err, video) {
+        if (err) deferred.reject(err);
+
+        deferred.resolve(normalizeVideoDetailJson(video));
+      });
+    });
+
+    return deferred.promise;
+  };
+
+  var normalizeVideoDetailJson = function (json) {
+    var data = json.nicovideo_thumb_response.thumb[0];
+    return Object.keys(data).reduce(function (acc, key) {
+      acc[key] = data[key][0];
+      return acc;
+    }, {});
+  };
+
   var randomWithRange = function (min, max) {
     return Math.floor( Math.random() * ( max - min + 1) + min );
   };
@@ -87,28 +114,32 @@ module.exports = function(robot) {
   };
 
   var createMessages = function (video) {
-    var videoData = video.item_data;
-    return [
-      videoData.thumnail_cache_url,
-      util.format('%s (%s)', videoData.title,
-        formatLengthSeconds(videoData.length_seconds)),
-      util.format('再生数:%s コメント数:%s マイリスト数:%s',
-        videoData.view_counter, videoData.num_res, videoData.mylist_counter),
-      util.format('http://www.nicovideo.jp/watch/%s', videoData.video_id),
-    ];
-  };
+    // サムネイルURL
+    // タイトル(時間)
+    // 動画紹介文
+    // 各種数値
+    // 動画URL
 
-  var formatLengthSeconds = function (ls) {
-    // m:ss
-    var m = Math.floor(ls / 60);
-    var s = ls % 60;
-    return util.format('%s:%s', m, s > 10 ? s : '0' + s);
+    return [
+      video.thumbnail_url + '#.jpg', // for hipchat
+      util.format(
+        "%s\n%s\n%s\n%s",
+        util.format('%s (%s)', video.title, video.length),
+        video.description,
+        util.format('再生数:%s コメント数:%s マイリスト数:%s',
+          video.view_counter, video.comment_num, video.mylist_counter),
+        util.format('http://www.nicovideo.jp/watch/%s', video.video_id)
+      )
+    ];
   };
 
   robot.respond(/emas$/i, function (res) {
     getAllVideos()
     .then(function (videos) {
       var video = choiceVideo(videos);
+      return getVideoDetail(video.item_data.video_id);
+    })
+    .then(function (video) {
       res.send.apply(res, createMessages(video));
     })
     .fail(function (err) {
