@@ -10,7 +10,7 @@
 //   HUBOT_ISSUE_PASSWORD
 //
 // Commands:
-//   hubot issue <issue-key> - display backlog issue info
+//   <issue-key> - display backlog issue info
 //
 // Author:
 //   bouzuya
@@ -18,7 +18,7 @@
 module.exports = function(robot) {
   var backlogApi = require('backlog-api');
 
-  robot.respond(/issue\s+(\S+)\s*$/i, function(res) {
+  robot.hear(/([A-Z]+-\d+)/, function(res) {
     var issueKey = res.match[1].toUpperCase();
 
     var backlog = backlogApi(
